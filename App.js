@@ -1,49 +1,130 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- * @flow
- */
+import React, { Component } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import {
+  createBottomTabNavigator,
+  createStackNavigator,
+  createAppContainer
+} from "react-navigation";
+import LatestVideos from "./components/screens/LatestVideos.js";
+import VideoModal from "./components/screens/VideoModal.js";
+import VideoScreen from "./components/screens/VideoScreen.js";
+import CategoriesScreen from "./components/screens/CategoriesScreen.js";
+import Shows from "./components/screens/Shows.js";
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+//Tab pages
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
-
-type Props = {};
-export default class App extends Component<Props> {
+//Home screen - latest videos
+class HomeScreen extends React.Component {
+  static navigationOptions = {
+    title: "Latest",
+    header: null
+  };
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
-    );
+    return <LatestVideos />;
   }
 }
+class Category extends React.Component {
+  static navigationOptions = {
+    title: "Categories"
+  };
+  render() {
+    return <CategoriesScreen />;
+  }
+}
+class ShowsScreen extends React.Component {
+  static navigationOptions = {
+    title: "Shows"
+  };
+  render() {
+    return <Shows />;
+  }
+}
+class CategoryTest extends React.Component {
+  render() {
+    return <CategoriesScreen />;
+  }
+}
+const HomeStack = createStackNavigator({
+  Home: CategoryTest,
+  Shows: ShowsScreen
+});
+//Tab nav
+const TabStack = createBottomTabNavigator({
+  LatestVideos:HomeScreen,
+  Categories: {
+    screen: Category
+  },
+  Search:HomeStack
+});
+//Modals
+class ModalScreen extends React.Component {
+  render() {
+    const { params } = this.props.navigation.state;
+    console.dir(params)
+    const videoItem = params ? params.videoItem : null;
+    const navigation = params ? params.navigation : null;
+    return <VideoModal item={videoItem} navigation={navigation} />;
+  }
+}
+class VideoModalScreen extends React.Component {
+  render() {
+    const { params } = this.props.navigation.state;
+    const navigation = params ? params.navigation : null;
+    // const videoItem = params ? params.videoItem : null;
+    return <VideoScreen navigation={navigation} />;
+  }
+}
+
+TabStack.navigationOptions =  {
+  // let { routeName } = navigation.state.routes[navigation.state.index];
+  // let headerTitle = routeName;
+  // return {
+  //   headerTitle
+  // };
+  header: null
+};
+//Top level navigator
+AppNavigator = createStackNavigator(
+  {
+    Main: {
+      screen: TabStack
+    },
+    Modal: {
+      screen: ModalScreen
+    },
+    Video: {
+      screen: VideoModalScreen
+    }
+  },
+  {
+    mode: "modal",
+    headerMode: "none"
+  }
+);
+AppNavigator.navigationOptions =  {
+  // let { routeName } = navigation.state.routes[navigation.state.index];
+  // let headerTitle = routeName;
+  // return {
+  //   headerTitle
+  // };
+  header: null
+};
+HomeStack.navigationOptions = {
+  // let { routeName } = navigation.state.routes[navigation.state.index];
+  // let headerTitle = routeName;
+  // return {
+  //   headerTitle
+  // };
+  header: null
+};
+
+export default createAppContainer(AppNavigator);
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#F5FCFF"
+  }
 });

@@ -7,15 +7,17 @@ export default class VerticleList extends React.Component {
   constructor(props) {
     super(props);
   }
-    _keyExtractor = (item, index) => item.guid
+  _keyExtractor = (item, index) => item.guid;
   render() {
-      console.log(`${process.env.REACT_APP_GB_API_KEY}`);
-    return (
-      <FlatList
-        data={this.props.iterableData}
-        keyExtractor={this._keyExtractor}
-        renderItem={({ item }) => (
-          <View>
+    console.log('props for verticle list');
+  
+    console.log('props for verticle list');
+      return (
+          <FlatList
+          data={this.props.iterableData}
+          keyExtractor={this._keyExtractor}
+          renderItem={({ item }) => (
+              <View>
             <SingleCard
               item={item}
               navigation={this.props.navigation}

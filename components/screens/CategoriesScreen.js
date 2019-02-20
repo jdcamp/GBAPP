@@ -12,6 +12,7 @@ import {
   TouchableOpacity
 } from "react-native";
 import { withNavigation } from "react-navigation";
+import SingleCard from "../SingleCard";
 
 class Categories extends React.Component {
   constructor(props) {
@@ -25,7 +26,7 @@ class Categories extends React.Component {
   _keyExtractor = (item, index) => item.guid;
   componentDidMount() {
     return fetch(
-      "https://www.giantbomb.com/api/video_shows/?api_key=721720d0999032bf8896fdace3f9cd5f92c4b8f1&format=json"
+      "https://www.giantbomb.com/api/video_shows/?api_key=721720d0999032bf8896fdace3f9cd5f92c4b8f1&format=json&sort=id"
     )
       .then(response => response.json())
       .then(responseJson => {
@@ -51,10 +52,20 @@ class Categories extends React.Component {
     }
     return (
       <SafeAreaView style={styles.listContainer}>
-        <VerticleList
-          iterableData={this.state.dataSource}
-          navigation={this.props.navigation}
-          route="Shows"
+        <FlatList
+          data={this.state.dataSource}
+          keyExtractor={this._keyExtractor}
+          renderItem={({ item }) => (
+            <View>
+              <SingleCard
+                item={item}
+                imageUrl={item.image.screen_url}
+                navigation={this.props.navigation}
+                route={"Shows"}
+                videoTitle={item.title}
+              />
+            </View>
+          )}
         />
       </SafeAreaView>
     );

@@ -9,8 +9,12 @@ import {
   View,
   ActionSheetIOS,
   Dimensions,
-  TouchableOpacity
+  TouchableOpacity,
+  Modal,
+  TouchableHighlight
 } from "react-native";
+import Orientation from "react-native-orientation-locker";
+import VideoScreen from "./VideoScreen"
 
 const { width, height: screenHeight } = Dimensions.get("window");
 const height = width * 0.5625;
@@ -20,48 +24,45 @@ export default class VideoModal extends Component {
     super(props);
     this.state = {
       showVideo: false,
-      video_url: this.props.item.hd_url
+      video_url: this.props.item.hd_url,
+      modalVisible: false
     };
     this._updatePause = this._updatePause.bind(this);
     this.onLoad = this.onLoad.bind(this);
   }
-  _playVideo = videoURL => {
-    this.setState({
-      video_url: videoURL,
-      showVideo: true
-    });
-  };
 
-  componentWilllMount() {
-    this._setSegmentArray();
-  }
-  _rotateDisplay() {
-    let currentOrientation = Orientation.getOrientation((err, orientation) => {
-      orientation == "LANDSCAPE"
-        ? Orientation.lockToPortrait()
-        : Orientation.lockToLandscape();
-    });
+  setModalVisible(visible) {
+    this.setState({ modalVisible: visible });
   }
 
   render() {
-    let videoPlayer = this.state.showVideo ? (
-      <VideoPlayer
-        video_url={this.state.video_url}
-        title={this.props.item.name}
-        rotateFunc={this._rotateDisplay}
-      />
-    ) : (
-      <View style={styles.videoPoster}>
-        <Image
-          style={{ width: undefined, height: height }}
-          source={{ uri: this.props.item.image.screen_url }}
-        />
-      </View>
-    );
+    let videoPlayer = this.state.modalVisible ? (
+      <VideoScreen navigation={this.state.navigation} video_url={this.state.video_url}/>
+    ) : null;
     return (
       <SafeAreaView style={styles.modalContainer}>
+        <View style={{ marginTop: 22 }}>
+          <Modal
+            animationType="fade"
+            transparent={false}
+            supportedOrientations={["landscape"]}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+            }}
+          >
+            {videoPlayer}
+          </Modal>
+        </View>
         <Text style={styles.title}>{this.props.item.name}</Text>
-        <View style={styles.videoContainer}>{videoPlayer}</View>
+        <View style={styles.videoContainer}>
+          <View style={styles.videoPoster}>
+            <Image
+              style={{ width: undefined, height: height }}
+              source={{ uri: this.props.item.image.screen_url }}
+            />
+          </View>
+        </View>
         <View style={styles.container}>
           <Button
             onPress={() => {
@@ -75,17 +76,26 @@ export default class VideoModal extends Component {
           <TouchableOpacity
             onPress={() =>
               this.props.navigation.navigate("Video", {
-                navigation: this.props.navigation
+                navigation: this.props.navigation,
+                video_url: this.state.video_url
               })
             }
           >
             <Text>This is a Button</Text>
           </TouchableOpacity>
+          <Button
+            title="View Modal"
+            onPress={() => {
+              this.setModalVisible(true);
+            }}
+          />
         </View>
         <View style={styles.backButton}>
           <Button
             title="BACK"
-            onPress={() => this.props.navigation.goBack(null)}
+            onPress={() => {
+              this.props.navigation.goBack(null);
+            }}
           />
         </View>
       </SafeAreaView>
@@ -105,9 +115,7 @@ export default class VideoModal extends Component {
       paused: bool
     });
   }
-  onFullscreenPlayerWillDismiss(data) {
-    console.log("Will diss miss fired");
-  }
+
   _setSegmentArray() {
     let segment = [];
     segment.push("Cancel");
@@ -151,7 +159,8 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "#232528",
     flex: 1,
-    flexDirection: "column"
+    flexDirection: "column",
+    padding: 10
   },
   title: {
     textAlign: "center",
@@ -163,6 +172,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     justifyContent: "flex-end",
-    flexGrow:1
+    flexGrow: 1
   }
 });

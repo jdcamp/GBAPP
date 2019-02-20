@@ -13,6 +13,8 @@ import {
 import { withNavigation } from "react-navigation";
 import SingleCard from "../SingleCard";
 import VerticleList from "../blocks/VerticleList";
+import { GB_API_KEY } from "../../API_KEY"
+import { gbListFetch } from "../fetchRequest";
 
 class LatestVideos extends React.Component {
   constructor(props) {
@@ -86,16 +88,27 @@ class LatestVideos extends React.Component {
   }
 
   render() {
+    console.log(GB_API_KEY);
     if (this.state.isLoading) {
       //TODO: Render loading animation while fetch request is called
       return <View />;
     }
     return (
       <SafeAreaView style={styles.listContainer}>
-        <VerticleList
-          iterableData={this.state.dataSource}
-          navigation={this.props.navigation}
-          route="Modal"
+        <FlatList
+          data={this.state.dataSource}
+          keyExtractor={this._keyExtractor}
+          renderItem={({ item }) => (
+            <View>
+              <SingleCard
+                item={item}
+                imageUrl={item.image.screen_url}
+                navigation={this.props.navigation}
+                route={this.props.route}
+                videoTitle={item.name}
+              />
+            </View>
+          )}
         />
       </SafeAreaView>
     );

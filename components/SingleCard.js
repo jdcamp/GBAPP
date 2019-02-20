@@ -18,9 +18,6 @@ export default class SingleCard extends React.Component {
 
   render() {
     //title based on category or title card
-    let title = this.props.item.name
-      ? this.props.item.name
-      : this.props.item.title;
     // let routeParams = this.props.navigation.state.params
     return (
       <View style={styles.card}>
@@ -34,14 +31,17 @@ export default class SingleCard extends React.Component {
         >
           <Image
             source={{
-              uri: this.props.item.image.screen_url
+              uri: this.props.imageUrl
             }}
             style={{
               width: undefined,
               height: 250
             }}
           />
-          <Text style={styles.title}>{title}</Text>
+          <View style={styles.titleContainer}>
+
+          <Text style={styles.title}>{this.props.videoTitle}</Text>
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -65,8 +65,15 @@ const styles = StyleSheet.create({
     }
   },
   title: {
-    color: "#fff",
+    color: "rgba(255,255,255,10)",
     fontSize: 16,
-    padding: 12
+    padding: 12,
+  },
+  titleContainer: {
+    position: "absolute",
+    backgroundColor: "rgba(25,25,25,0.66)",
+    bottom: 0,
+    right: 0,
+    left: 0
   }
 });
